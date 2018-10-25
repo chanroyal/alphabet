@@ -8,6 +8,7 @@ Easy:
 npm install
 node alphabet.js
 ```
+Note: I had trouble getting dependencies to work on Node 11. All testing was done with Node 8.12.
 
 ## Playing
 
