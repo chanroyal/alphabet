@@ -1,2 +1,2 @@
 # alphabet
-Node.js implementation of alphabet mastermind
+Node.js implementation of alphabet guessing game server.

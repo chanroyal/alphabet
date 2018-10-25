@@ -1,0 +1,77 @@
+doctype html
+html(lang="en")
+  head
+    title alphabet game
+    style.
+      table tr:nth-child(odd) td, th {
+        background-color: #AAA;
+      }
+      table tr:nth-child(even) td {
+        background-color: #EEE;
+      }
+  body
+    h1 alphabet: a simple string guessing game
+    #container.col
+      p.
+        alphabet is a simple yet theoretically challenging game involving one simple task: guessing random strings
+
+    h1 Scoreboard
+    table(style='width:600px', border='0px')
+      tr(style='text-align:left')
+        th Name
+        th Score
+      each val in scoreboard
+        tr
+          td= val.name
+          td= val.score
+      else
+        tr
+          td No
+          td Games
+
+    hr
+
+    #container.col
+      h2 Start the Game
+      p Make a POST to "/startgame" to begin. You will need to provide some information:
+      pre.
+        {
+          "name": "yourFavoriteAlias"
+        }
+
+      p The response will include all the parameters to play the game:
+      pre.
+        {
+          "token": "&lt;some random string&gt;", // opaque token required to submit guesses to your current game
+          "length": 2,                     // current length of the string
+          "guessesLeft": 5000              // the number of guesses before the game ends
+        }
+
+      h2 Play the Game
+
+      p To make a guess, post a guess to "/guess":
+      pre.
+        {
+          "token": "&lt;previous token&gt;",
+          "guess": "&lt;your guess&gt;"          // invalid guesses will error
+        }
+
+      p. 
+        Guesses must match the length and must contain only lowercase alphabetical characters: [a-z]{length}. The response will be similar to the payload from starting the game
+      pre.
+        {
+          "token": "&lt;some random string&gt;", // important: this changes!
+          "length": 2,                     // important: this changes when you guess correctly!
+          "guessesLeft" : 4999,            // guesses will decrement as expected
+          "lettersCorrect" : 1             // count of exact letter and position matched
+        }
+
+      p The only difference is the "lettersCorrect". This is the number of exact matches of letter and position. For example, if the secret was "abcde" and you guessed "edcba", you would get a '1' because the third letter 'c' was a perfect match.
+      p If the length ever increases, it means you guessed right and a new, longer string has been generated. Keep playing!
+
+      h2 Game's End
+
+      p The game ends when you use all 5000 guesses. You are given points for two things:
+      ul#points
+        li For all guessed strings, you get +length points. For instance, if you successfully guessed strings of length 2, 4, 6, 8, and 10, then you would get 30 points regardless of how many guesses you took.
+        li If the final string was not completely guessed, you get points for your best single guess. For instance, if you completed your 5000th guess on a length 40 string, was told you got 10 right, but earlier guessed 22 right, you get 22 points for this last string.
